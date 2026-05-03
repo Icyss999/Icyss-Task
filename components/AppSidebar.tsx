@@ -1,9 +1,10 @@
 "use client"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuAction, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSubButton, SidebarMenuSubItem, SidebarTrigger, useSidebar } from "./ui/sidebar";
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuAction, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarMenuSubButton, SidebarMenuSubItem, SidebarSeparator, SidebarTrigger, useSidebar } from "./ui/sidebar";
 import { Label } from "./ui/label";
 import { BookIcon, CalendarIcon, CheckIcon, ClockIcon, HouseIcon, PaperclipIcon, PlusIcon, StarIcon } from "lucide-react";
 import { UserProfile } from "./Avatar";
 import Link from "next/link";
+import { AddTask } from "./AddTask";
 
 
 
@@ -39,15 +40,13 @@ function AppSideBar (){
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarMenu>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton>
-                                <PlusIcon/>
-                                Add Task
-                            </SidebarMenuButton>
-                        </SidebarMenuItem>
-                    </SidebarMenu>
+                    
+                            
+                    <AddTask/>
+
+                        
                 </SidebarGroup>
+                <SidebarSeparator/>
                 <SidebarGroup>
                     <SidebarGroupLabel>
                         Menu 
@@ -68,6 +67,8 @@ function AppSideBar (){
                         }
                     </SidebarMenu>
                 </SidebarGroup>
+
+                <SidebarSeparator/>
 
                 <SidebarGroup>
                     <SidebarGroupLabel> 
