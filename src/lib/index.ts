@@ -1,6 +1,15 @@
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
+import { Pool } from 'pg';
+import { drizzle } from 'drizzle-orm/node-postgres';
+import {config} from "dotenv"
+
+config({path: ".env.local"})
+
+const sql = new Pool({
+    connectionString : process.env.DATABASE_URL,
+    connectionTimeoutMillis : 7000,
+    ssl: true,
+
+})
 
 
-const sql = neon(process.env.DATABASE_URL!)
 export const db = drizzle(sql)
