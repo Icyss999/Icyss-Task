@@ -56,28 +56,27 @@ function AddTask() {
         "title" : values.title,
         "description" : values.description,
         "completedBy" : values.completedBy? values.completedBy.toISOString : null,
-        "priority" : values.priority
+        "priority" : values.priority,
       })
 
     })
 
     const data = await res.json()
-    console.log(data)
-    
     if (data.success){
       reset()
+      window.location.reload()
       
     }
   };
 
   return (
-      <Dialog>
+      <Dialog >
         <DialogTrigger className="flex gap-[10px]" asChild>
           <SidebarMenu className="w-[240px]">
             <SidebarMenuItem>
-              <SidebarMenuButton>
+              <SidebarMenuButton className='transition-transform duration-200 hover:scale-102 '>
                 <PlusIcon />
-                <Label>Add Task</Label>
+                <Label className="text-base">Add Task</Label>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>

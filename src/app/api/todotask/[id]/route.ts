@@ -16,7 +16,7 @@ export async function DELETE (req:Request, {params}: {params:Promise<{id:string}
 
         }
 
-        return Response.json ({message: "You have successfully deleted the room!"}, {status:200})
+        return Response.json ({success:true},{message: "You have successfully deleted the room!"}, {status:200})
 
     }catch (error){
 
