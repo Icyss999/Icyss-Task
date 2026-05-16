@@ -54,7 +54,7 @@ function AppSideBar (){
                     <SidebarMenu>
                         {
                             MenuItem.map (item => (
-                                <Link href = {item.href}>
+                                <Link href = {item.href} key={item.Name}>
                                 <SidebarMenuItem>
                                     <SidebarMenuButton>
                                         <item.Icon/>

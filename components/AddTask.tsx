@@ -1,82 +1,148 @@
-import { CalendarIcon, PlusIcon } from "lucide-react"
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { Label } from "./ui/label"
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar"
-import { Input } from "./ui/input"
-import { Separator } from "./ui/separator"
-import { ShowCalendar } from "./ShowCalendar"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "./ui/select"
-import { Button } from "./ui/button"
+import { CalendarIcon, PlusIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { Label } from "./ui/label";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "./ui/sidebar";
+import { Input } from "./ui/input";
+import { Separator } from "./ui/separator";
+import { ShowCalendar } from "./ShowCalendar";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { Button } from "./ui/button";
+import { Controller, useForm } from "react-hook-form";
+import { Task, taskSchema } from "@/src/types/schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { resumePluginState } from "next/dist/build/build-context";
+import { DayFlag } from "react-day-picker";
 
+function AddTask() {
+  const {
+    reset,
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isDirty },
+  } = useForm<Task>({
+    resolver: zodResolver(taskSchema),
+    defaultValues : {
+      title : "",
+      description : "",
+      completedBy : undefined,
+      priority : "none"
+    }
+  });
 
-function AddTask (){
+  const onSubmit = async (values:Task) => {
 
+    const res = await fetch ("/api/todotask", {
+      method : "POST",
+      headers : {"Content-Type" : "application/json"},
+      body : JSON.stringify({
+        "title" : values.title,
+        "description" : values.description,
+        "completedBy" : values.completedBy? values.completedBy.toISOString : null,
+        "priority" : values.priority
+      })
 
-    return(
-       
-            <Dialog>
-                <DialogTrigger className="flex gap-[10px]" asChild>
-                    <SidebarMenu className='w-[240px]'>
-                        <SidebarMenuItem>
-                            <SidebarMenuButton>
-                                <PlusIcon/>
-                                <Label>Add Task</Label>
-                            </SidebarMenuButton>
+    })
 
-                        </SidebarMenuItem>
-                    </SidebarMenu> 
-                </DialogTrigger>
-                <DialogContent showCloseButton={false} >
-                    <DialogHeader>
-                        <DialogTitle className="text-[gray]">New Task</DialogTitle>
-                    </DialogHeader>
-                    <div className='flex flex-col gap-[10px]'>
-                        <Input
-                        className="!text-2xl border-none shadow-none focus-visible:ring-0 "
-                        placeholder="Wash the dishes !!!!"/>
-                         <Input
-                        className=" border-none shadow-none focus-visible:ring-0 "
-                        placeholder="Add a Note..."/>
-                    </div>
+    const data = await res.json()
+    console.log(data)
+    
+    if (data.success){
+      reset()
+      
+    }
+  };
 
-                    <Separator/>
-                    <section className="flex gap-[20px]">
-                        <ShowCalendar/>
+  return (
+      <Dialog>
+        <DialogTrigger className="flex gap-[10px]" asChild>
+          <SidebarMenu className="w-[240px]">
+            <SidebarMenuItem>
+              <SidebarMenuButton>
+                <PlusIcon />
+                <Label>Add Task</Label>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </DialogTrigger>
+        <DialogContent showCloseButton={false}>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[10px]">
+            <DialogHeader>
+              <DialogTitle className="text-[gray]">New Task</DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-[10px]">
+              <Input
+                className="!text-2xl border-none shadow-none focus-visible:ring-0 "
+                placeholder="Wash the dishes !!!!"
+                {...register("title")}
+              />
+              
+              
+              <Input
+                className=" border-none shadow-none focus-visible:ring-0 "
+                placeholder="Add a Note..."
+                {...register("description")}
+              />
+            </div>
 
-                        <div>
-                            <Select>
-                                <SelectTrigger className="[&>svg]:hidden ">
-                                    <SelectValue 
-                                    placeholder ="Priority"/>
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectGroup>
-                                        <SelectLabel> Priority </SelectLabel>
-                                        <SelectItem value="low"> Low </SelectItem>
-                                        <SelectItem value="medium"> Medium </SelectItem>
-                                        <SelectItem value="high"> High </SelectItem>
-                                    </SelectGroup>
-                                </SelectContent>
-                            </Select>
-                        </div>
+            <Separator />
+            <section className="flex gap-[20px]">
+              <ShowCalendar control={control} />
 
-                    </section>
+              <div>
+                <Controller
+                control = {control}
+                name = "priority"
+                render = {({field})=>(
+                  <Select onValueChange={field.onChange} value = {field.value}>
+                    <SelectTrigger className="[&>svg]:hidden ">
+                      <SelectValue placeholder="Priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel> Priority </SelectLabel>
+                        <SelectItem value="none"> None </SelectItem>
+                        <SelectItem value="low"> Low </SelectItem>
+                        <SelectItem value="medium"> Medium </SelectItem>
+                        <SelectItem value="high"> High </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
 
-                    <DialogFooter>
-                        <DialogClose asChild>
-                            <Button variant= 'outline'> Cancel </Button>
-                        </DialogClose>
-                        <Button variant='outline'> Add Task </Button>
-                    </DialogFooter>
-                    
-                </DialogContent>
+                )}/>
                 
-            </Dialog>
+                  
+                
+              </div>
+            </section>
 
-    )
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline"> Cancel </Button>
+              </DialogClose>
+              <Button variant="outline" type="submit" disabled={!isDirty}> Add Task </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+  );
 }
 
-
-
-
-export {AddTask}
+export { AddTask };
