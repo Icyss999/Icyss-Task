@@ -1,6 +1,6 @@
 import { boolean, pgEnum, pgTable, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 
-export const priorityEnum = pgEnum("priority", ["none","low", "meduim", "high"]) 
+export const priorityEnum = pgEnum("priority", ["none","low", "medium", "high"]) 
 
 export const todoTable = pgTable("todos", {
     id : uuid("id").defaultRandom().primaryKey(),
