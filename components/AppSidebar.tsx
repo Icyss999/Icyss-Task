@@ -60,7 +60,7 @@ function AppSideBar() {
         {isActive ? (
           <Label className="ml-[12px]"> I </Label>
         ) : (
-          <Label className="text-2xl ml-[10px]"> Icyss Todo List </Label>
+          <Label className="text-lg ml-[10px]"> Icyss Todo List </Label>
         )}
       </SidebarHeader>
       <SidebarContent>

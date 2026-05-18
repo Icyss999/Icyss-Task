@@ -1,9 +1,8 @@
-import { CalendarIcon, PlusIcon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -27,10 +26,13 @@ import { Button } from "./ui/button";
 import { Controller, useForm } from "react-hook-form";
 import { Task, taskSchema } from "@/src/types/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { resumePluginState } from "next/dist/build/build-context";
-import { DayFlag } from "react-day-picker";
+import { useState } from "react";
+
 
 function AddTask() {
+
+  const [isLoading, setIsLoading] = useState(false)
+
   const {
     reset,
     control,
@@ -49,7 +51,9 @@ function AddTask() {
 
   const onSubmit = async (values:Task) => {
 
-    const res = await fetch ("/api/todotask", {
+    try{
+      setIsLoading(true)
+      const res = await fetch ("/api/todotask", {
       method : "POST",
       headers : {"Content-Type" : "application/json"},
       body : JSON.stringify({
@@ -67,6 +71,14 @@ function AddTask() {
       window.location.reload()
       
     }
+
+    }catch(error){
+      console.error(error)
+    }finally{
+      setIsLoading(false)
+    }
+
+   
   };
 
   return (
@@ -134,9 +146,11 @@ function AddTask() {
 
             <DialogFooter>
               <DialogClose asChild>
-                <Button variant="outline"> Cancel </Button>
+                <Button 
+                variant="outline"
+                disabled = {isLoading}> Cancel </Button>
               </DialogClose>
-              <Button variant="outline" type="submit" disabled={!isDirty}> Add Task </Button>
+              <Button variant="outline" type="submit" disabled={!isDirty? true : isLoading }> {isLoading? "Proceeding..." : "Add Task"} </Button>
             </DialogFooter>
           </form>
         </DialogContent>

@@ -25,7 +25,7 @@ function Header (){
             
             <span className="flex items-center ml-[10px] gap-[20px] ">
                 <SidebarTrigger/>
-                <p className="text-2xl">{title[urlName]}</p> 
+                <p className="text-base">{title[urlName]}</p> 
             </span>
             <Separator orientation="horizontal" className="w-full mt-[20px]"/>
 
