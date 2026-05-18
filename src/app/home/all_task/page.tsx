@@ -1,5 +1,6 @@
 "use client";
 import { DisplayTask } from "@/components/DisplayTask";
+import SkeletonTask from "@/components/LoadingTask";
 import { Label } from "@/components/ui/label";
 import { Task } from "@/src/types/schema";
 import { useEffect, useState } from "react";
@@ -30,7 +31,7 @@ export default function AllTask() {
     getTask()
   }, []);
 
-  if (loading) return(<Label className="ml-[20px] mt-[10px]"> Loading... </Label>)
+  if (loading) return(<SkeletonTask/>)
 
   return (
         <DisplayTask data={task}/>
