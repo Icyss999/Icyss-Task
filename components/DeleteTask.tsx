@@ -32,10 +32,10 @@ function DeleteTask({ deleteId }: { deleteId: string }) {
   };
 
   return (
-    <div className="hidden group-hover:block ml-[25vw]">
+    <div className="hidden group-hover:block ">
       <AlertDialog>
         <AlertDialogTrigger>
-          <TrashIcon className="w-5 h-5 opacity-50 transition-transform duration-200 hover:scale-105 hover:opacity-100 cursor-pointer" />
+          <TrashIcon className="w-5 h-5 opacity-50 transition-transform duration-200 hover:scale-105 hover:opacity-100 cursor-pointer mt-2" />
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

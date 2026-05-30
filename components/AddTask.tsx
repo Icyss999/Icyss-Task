@@ -28,10 +28,28 @@ import { Task, taskSchema } from "@/src/types/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 
-
 function AddTask() {
+  return (
+    <Dialog>
+      <DialogTrigger className="flex gap-[10px]" asChild>
+        <SidebarMenu className="w-[240px]">
+          <SidebarMenuItem>
+            <SidebarMenuButton className="transition-transform duration-200 hover:scale-102 ">
+              <PlusIcon />
+              <Label className="text-base">Add Task</Label>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </DialogTrigger>
+      <DialogContent showCloseButton={false}>
+        <Content />
+      </DialogContent>
+    </Dialog>
+  );
+}
 
-  const [isLoading, setIsLoading] = useState(false)
+function Content() {
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     reset,
@@ -41,121 +59,130 @@ function AddTask() {
     formState: { errors, isDirty },
   } = useForm<Task>({
     resolver: zodResolver(taskSchema),
-    defaultValues : {
-      title : "",
-      description : "",
-      completedBy : undefined,
-      priority : "none"
-    }
+    defaultValues: {
+      title: "",
+      description: "",
+      completedBy: undefined,
+      priority: "none",
+    },
   });
 
-  const onSubmit = async (values:Task) => {
+  const onSubmit = async (values: Task) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/todotask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: values.title,
+          description: values.description,
+          completedBy: values.completedBy
+            ? values.completedBy.toISOString
+            : null,
+          priority: values.priority,
+        }),
+      });
 
-    try{
-      setIsLoading(true)
-      const res = await fetch ("/api/todotask", {
-      method : "POST",
-      headers : {"Content-Type" : "application/json"},
-      body : JSON.stringify({
-        "title" : values.title,
-        "description" : values.description,
-        "completedBy" : values.completedBy? values.completedBy.toISOString : null,
-        "priority" : values.priority,
-      })
-
-    })
-
-    const data = await res.json()
-    if (data.success){
-      reset()
-      window.location.reload()
-      
+      const data = await res.json();
+      if (data.success) {
+        reset();
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
-
-    }catch(error){
-      console.error(error)
-    }finally{
-      setIsLoading(false)
-    }
-
-   
   };
 
   return (
-      <Dialog >
-        <DialogTrigger className="flex gap-[10px]" asChild>
-          <SidebarMenu className="w-[240px]">
-            <SidebarMenuItem>
-              <SidebarMenuButton className='transition-transform duration-200 hover:scale-102 '>
-                <PlusIcon />
-                <Label className="text-base">Add Task</Label>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </DialogTrigger>
-        <DialogContent showCloseButton={false}>
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-[10px]">
-            <DialogHeader>
-              <DialogTitle className="text-[gray]">New Task</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-col gap-[10px]">
-              <Input
-                className="!text-2xl border-none shadow-none focus-visible:ring-0 "
-                placeholder="Wash the dishes !!!!"
-                {...register("title")}
-              />
-              
-              
-              <Input
-                className=" border-none shadow-none focus-visible:ring-0 "
-                placeholder="Add a Note..."
-                {...register("description")}
-              />
-            </div>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="flex flex-col gap-[10px]"
+    >
+      <DialogHeader>
+        <DialogTitle className="text-[gray]">New Task</DialogTitle>
+      </DialogHeader>
+      <div className="flex flex-col gap-[10px]">
+        <Input
+          className="!text-2xl border-none shadow-none focus-visible:ring-0 "
+          placeholder="Wash the dishes !!!!"
+          {...register("title")}
+        />
 
-            <Separator />
-            <section className="flex gap-[20px]">
-              <ShowCalendar control={control} />
+        <Input
+          className=" border-none shadow-none focus-visible:ring-0 "
+          placeholder="Add a Note..."
+          {...register("description")}
+        />
+      </div>
 
-              <div>
-                <Controller
-                control = {control}
-                name = "priority"
-                render = {({field})=>(
-                  <Select onValueChange={field.onChange} value = {field.value}>
-                    <SelectTrigger className="[&>svg]:hidden ">
-                      <SelectValue placeholder="Priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel> Priority </SelectLabel>
-                        <SelectItem value="none"> None </SelectItem>
-                        <SelectItem value="low"> Low </SelectItem>
-                        <SelectItem value="medium"> Medium </SelectItem>
-                        <SelectItem value="high"> High </SelectItem>
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+      <Separator />
+      <section className="flex gap-[20px]">
+        <ShowCalendar control={control} />
 
-                )}/>
-                
-                  
-                
-              </div>
-            </section>
+        <div>
+          <Controller
+            control={control}
+            name="priority"
+            render={({ field }) => (
+              <Select onValueChange={field.onChange} value={field.value}>
+                <SelectTrigger className="[&>svg]:hidden ">
+                  <SelectValue placeholder="Priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel> Priority </SelectLabel>
+                    <SelectItem value="none"> None </SelectItem>
+                    <SelectItem value="low"> Low </SelectItem>
+                    <SelectItem value="medium"> Medium </SelectItem>
+                    <SelectItem value="high"> High </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
+      </section>
 
-            <DialogFooter>
-              <DialogClose asChild>
-                <Button 
-                variant="outline"
-                disabled = {isLoading}> Cancel </Button>
-              </DialogClose>
-              <Button variant="outline" type="submit" disabled={!isDirty? true : isLoading }> {isLoading? "Proceeding..." : "Add Task"} </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button variant="outline" disabled={isLoading}>
+            {" "}
+            Cancel{" "}
+          </Button>
+        </DialogClose>
+        <Button
+          variant="outline"
+          type="submit"
+          disabled={!isDirty ? true : isLoading}
+        >
+          {" "}
+          {isLoading ? "Proceeding..." : "Add Task"}{" "}
+        </Button>
+      </DialogFooter>
+    </form>
   );
 }
 
-export { AddTask };
+function AddButton() {
+  return (
+    <div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button 
+          variant="outline"
+          className="mt-[10px] ">
+            <PlusIcon className="font-bold" />
+            <Label className="font-bold"> Add Task</Label>
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <Content/>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}
+
+export { AddTask, AddButton };
