@@ -1,6 +1,7 @@
 import { db } from "@/src/lib";
 import { todoTable } from "@/src/lib/db/schema";
 import { eq } from "drizzle-orm";
+import { success } from "zod";
 
 
 
@@ -42,7 +43,7 @@ export async function PATCH (req:Request, {params}:{params:Promise<{id:string}>}
             return Response.json({error:"Room cannot be updated!"}, {status:404})
         }
 
-        return Response.json({message: "Your Task has sucessfully updated"}, { status:200})
+        return Response.json({success:true},{message: "Your Task has sucessfully updated"}, { status:200})
 
 
     }catch(error){
